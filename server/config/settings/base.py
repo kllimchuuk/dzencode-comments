@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "rest_framework",
 ]
 
 MIDDLEWARE = [
@@ -63,6 +64,18 @@ DATABASES = {
         "PORT": env("DB_PORT", default="3306"),
         "OPTIONS": {"charset": "utf8mb4"},
     }
+}
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": env("REDIS_URL", default="redis://127.0.0.1:6379/0"),
+    }
+}
+
+REST_FRAMEWORK = {
+    "DEFAULT_PAGINATION_CLASS": "core.pagination.DefaultPagination",
+    "EXCEPTION_HANDLER": "core.exceptions.drf_exception_handler",
 }
 
 AUTH_PASSWORD_VALIDATORS = [
