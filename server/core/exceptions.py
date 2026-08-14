@@ -62,6 +62,18 @@ class NotFoundException(AppException):
         super().__init__(code="not_found", message=message, payload=payload)
 
 
+class ConflictException(AppException):
+    status_code = status.HTTP_409_CONFLICT
+
+    def __init__(
+        self,
+        code: str = "conflict",
+        message: str = "Resource already exists.",
+        payload: dict | None = None,
+    ) -> None:
+        super().__init__(code=code, message=message, payload=payload)
+
+
 class TooManyRequestsException(AppException):
     status_code = status.HTTP_429_TOO_MANY_REQUESTS
 

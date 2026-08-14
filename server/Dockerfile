@@ -15,4 +15,5 @@ COPY . .
 RUN useradd -m -u 1000 app && chown -R app:app /app
 USER app
 
+ENTRYPOINT ["sh", "/app/entrypoint.sh"]
 CMD ["uvicorn", "config.asgi:application", "--host", "0.0.0.0", "--port", "8000"]
