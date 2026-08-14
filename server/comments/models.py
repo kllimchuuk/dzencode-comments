@@ -44,3 +44,20 @@ class Comment(TimeStampedModel):
 
     def __str__(self):
         return f"{self.user_name}: {self.text[:50]}"
+
+
+class Attachment(TimeStampedModel):
+    class Kind(models.TextChoices):
+        IMAGE = "image"
+        TEXT = "text"
+
+    comment = models.OneToOneField(
+        Comment,
+        on_delete=models.CASCADE,
+        related_name="attachment",
+    )
+    file = models.FileField(upload_to="attachments/")
+    kind = models.CharField(max_length=5, choices=Kind.choices)
+
+    def __str__(self):
+        return f"{self.kind}: {self.file.name}"
