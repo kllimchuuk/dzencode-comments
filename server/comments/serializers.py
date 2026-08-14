@@ -1,14 +1,11 @@
-from django.core.validators import RegexValidator
 from rest_framework import serializers
 
-from .models import Attachment, Comment
+from .models import USER_NAME_VALIDATOR, Attachment, Comment
 
 
 class CommentCreateSerializer(serializers.Serializer):
     parent = serializers.IntegerField(required=False, allow_null=True)
-    user_name = serializers.CharField(
-        max_length=60, validators=[RegexValidator(r"^[A-Za-z0-9]+$")]
-    )
+    user_name = serializers.CharField(max_length=60, validators=[USER_NAME_VALIDATOR])
     email = serializers.EmailField()
     home_page = serializers.URLField(required=False, allow_blank=True)
     text = serializers.CharField()

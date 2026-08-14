@@ -7,7 +7,7 @@ class DefaultPagination(PageNumberPagination):
     page_size_query_param = "page_size"
     max_page_size = 100
 
-    def get_paginated_response(self, data):
+    def get_paginated_response(self, data: list) -> Response:
         return Response(
             {
                 "page": self.page.number,

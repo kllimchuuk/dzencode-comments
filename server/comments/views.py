@@ -1,4 +1,5 @@
 from rest_framework import status
+from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -18,14 +19,14 @@ from .services import CommentService
 class CaptchaView(APIView):
     throttle_scope = "captcha"
 
-    def get(self, request):
+    def get(self, request: Request) -> Response:
         return Response(CaptchaService().generate())
 
 
 class CommentPreviewView(APIView):
     throttle_scope = "preview"
 
-    def post(self, request):
+    def post(self, request: Request) -> Response:
         serializer = CommentPreviewSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         html = CommentService().preview(serializer.validated_data["text"])
@@ -36,7 +37,7 @@ class CommentListCreateView(APIView):
     throttle_classes = [WriteScopedRateThrottle]
     throttle_scope = "comment_create"
 
-    def get(self, request):
+    def get(self, request: Request) -> Response:
         roots = get_root_comments(ordering=request.query_params.get("ordering"))
         paginator = DefaultPagination()
         page = paginator.paginate_queryset(roots, request)
@@ -44,7 +45,7 @@ class CommentListCreateView(APIView):
         data = CommentSerializer(forest, many=True).data
         return paginator.get_paginated_response(data)
 
-    def post(self, request):
+    def post(self, request: Request) -> Response:
         serializer = CommentCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         comment = CommentService().create(
@@ -53,5 +54,4 @@ class CommentListCreateView(APIView):
             ip_address=request.META.get("REMOTE_ADDR"),
             user_agent=request.META.get("HTTP_USER_AGENT", ""),
         )
-        comment._children = []
         return Response(CommentSerializer(comment).data, status=status.HTTP_201_CREATED)

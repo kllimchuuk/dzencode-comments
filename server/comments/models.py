@@ -6,9 +6,11 @@ from tree_queries.query import TreeQuerySet
 
 from core.models import TimeStampedModel
 
+USER_NAME_VALIDATOR = RegexValidator(r"^[A-Za-z0-9]+$")
+
 
 class CommentQuerySet(TreeQuerySet):
-    def roots(self):
+    def roots(self) -> "CommentQuerySet":
         return self.filter(parent__isnull=True)
 
 
@@ -29,7 +31,7 @@ class Comment(TimeStampedModel):
     )
     user_name = models.CharField(
         max_length=60,
-        validators=[RegexValidator(r"^[A-Za-z0-9]+$")],
+        validators=[USER_NAME_VALIDATOR],
     )
     email = models.EmailField()
     home_page = models.URLField(blank=True)

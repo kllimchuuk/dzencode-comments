@@ -25,8 +25,9 @@ class ValidationException(AppException):
         self,
         message: str = "Validation error",
         payload: dict | None = None,
+        code: str = "validation_error",
     ) -> None:
-        super().__init__(code="validation_error", message=message, payload=payload)
+        super().__init__(code=code, message=message, payload=payload)
 
 
 class UnauthorizedException(AppException):
@@ -58,8 +59,9 @@ class NotFoundException(AppException):
         self,
         message: str = "Entity not found",
         payload: dict | None = None,
+        code: str = "not_found",
     ) -> None:
-        super().__init__(code="not_found", message=message, payload=payload)
+        super().__init__(code=code, message=message, payload=payload)
 
 
 class ConflictException(AppException):
@@ -85,7 +87,7 @@ class TooManyRequestsException(AppException):
         super().__init__(code="too_many_requests", message=message, payload=payload)
 
 
-def drf_exception_handler(exc, context):
+def drf_exception_handler(exc: Exception, context: dict) -> Response | None:
     if isinstance(exc, AppException):
         return Response(
             {"code": exc.code, "message": exc.message, "payload": exc.payload},
