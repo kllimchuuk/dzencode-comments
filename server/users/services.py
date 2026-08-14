@@ -1,9 +1,12 @@
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db import IntegrityError
+from rest_framework_simplejwt.exceptions import TokenError
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from core.exceptions import ConflictException, ValidationException
 
+from .exceptions import InvalidTokenException
 from .models import User
 
 
@@ -20,6 +23,12 @@ class UserService:
             raise ConflictException(
                 message="A user with these credentials already exists."
             )
+
+    def logout(self, refresh: str) -> None:
+        try:
+            RefreshToken(refresh).blacklist()
+        except TokenError:
+            raise InvalidTokenException()
 
     def _ensure_username_available(self, username: str) -> None:
         if User.objects.filter(username=username).exists():
