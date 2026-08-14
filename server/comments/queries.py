@@ -20,7 +20,11 @@ def normalize_ordering(value: str | None) -> str:
 
 
 def get_root_comments(*, ordering: str | None) -> QuerySet[Comment]:
-    return Comment.objects.roots().order_by(normalize_ordering(ordering))
+    return (
+        Comment.objects.roots()
+        .select_related("attachment")
+        .order_by(normalize_ordering(ordering))
+    )
 
 
 def get_comment_forest(roots: list[Comment]) -> list[Comment]:
@@ -28,7 +32,11 @@ def get_comment_forest(roots: list[Comment]) -> list[Comment]:
 
 
 def _build_subtree(root: Comment) -> Comment:
-    nodes = list(Comment.objects.descendants(root, include_self=True))
+    nodes = list(
+        Comment.objects.descendants(root, include_self=True).select_related(
+            "attachment"
+        )
+    )
     by_id = _index_nodes(nodes)
     _link_children(nodes, by_id)
     return by_id[root.pk]
