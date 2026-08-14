@@ -7,13 +7,15 @@ from .models import Comment
 from .serializers import CommentSerializer
 
 
-def broadcast_comment(sender, instance, created, **kwargs):
+def broadcast_comment(
+    sender: type[Comment], instance: Comment, created: bool, **kwargs
+) -> None:
     if not created:
         return
     transaction.on_commit(lambda: _broadcast(instance.pk))
 
 
-def _broadcast(comment_id):
+def _broadcast(comment_id: int) -> None:
     comment = Comment.objects.select_related("attachment").get(pk=comment_id)
     payload = CommentSerializer(comment).data
     async_to_sync(get_channel_layer().group_send)(

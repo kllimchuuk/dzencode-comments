@@ -87,7 +87,7 @@ class TooManyRequestsException(AppException):
         super().__init__(code="too_many_requests", message=message, payload=payload)
 
 
-def drf_exception_handler(exc, context):
+def drf_exception_handler(exc: Exception, context: dict) -> Response | None:
     if isinstance(exc, AppException):
         return Response(
             {"code": exc.code, "message": exc.message, "payload": exc.payload},

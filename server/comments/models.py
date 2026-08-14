@@ -10,7 +10,7 @@ USER_NAME_VALIDATOR = RegexValidator(r"^[A-Za-z0-9]+$")
 
 
 class CommentQuerySet(TreeQuerySet):
-    def roots(self):
+    def roots(self) -> "CommentQuerySet":
         return self.filter(parent__isnull=True)
 
 

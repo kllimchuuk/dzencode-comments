@@ -5,7 +5,7 @@ class CommentsConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = "comments"
 
-    def ready(self):
+    def ready(self) -> None:
         from django.db.models.signals import post_save
 
         from .models import Comment
