@@ -14,7 +14,7 @@ class UserService:
     def register(self, *, username: str, email: str, password: str) -> User:
         self._ensure_username_available(username)
         self._ensure_email_available(email)
-        self._validate_password(password)
+        self._validate_password(password, User(username=username, email=email))
         try:
             return User.objects.create_user(
                 username=username, email=email, password=password
@@ -44,9 +44,9 @@ class UserService:
                 message="A user with this email already exists.",
             )
 
-    def _validate_password(self, password: str) -> None:
+    def _validate_password(self, password: str, user: User) -> None:
         try:
-            validate_password(password)
+            validate_password(password, user=user)
         except DjangoValidationError as exc:
             raise ValidationException(
                 message="Password does not meet requirements.",
