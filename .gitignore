@@ -13,8 +13,8 @@ dist/
 .vscode/
 .DS_Store
 *.sqlite3
-/media/
-/staticfiles/
+/server/media/
+/server/staticfiles/
 docs/
 CLAUDE.md
 .claude/

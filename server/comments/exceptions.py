@@ -22,3 +22,14 @@ class InvalidCaptchaException(AppException):
 
     def __init__(self, message="Invalid or expired captcha.", payload=None):
         super().__init__(code="invalid_captcha", message=message, payload=payload)
+
+
+class InvalidAttachmentException(AppException):
+    status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
+
+    def __init__(
+        self,
+        message="Attachment must be a JPG/PNG/GIF image (<=5MB) or a .txt file (<=100KB).",
+        payload=None,
+    ):
+        super().__init__(code="invalid_attachment", message=message, payload=payload)

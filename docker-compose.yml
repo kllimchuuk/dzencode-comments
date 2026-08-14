@@ -42,8 +42,28 @@ services:
     environment:
       DB_HOST: db
       REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/1
     ports:
       - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  worker:
+    build: ./server
+    container_name: comments_worker
+    command: celery -A config worker -l info
+    entrypoint: []
+    volumes:
+      - ./server:/app
+    env_file:
+      - ./.env
+    environment:
+      DB_HOST: db
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/1
     depends_on:
       db:
         condition: service_healthy

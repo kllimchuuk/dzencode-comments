@@ -79,6 +79,9 @@ CACHES = {
     }
 }
 
+CELERY_BROKER_URL = env("CELERY_BROKER_URL", default="redis://127.0.0.1:6379/1")
+CELERY_RESULT_BACKEND = CELERY_BROKER_URL
+
 REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "core.pagination.DefaultPagination",
     "EXCEPTION_HANDLER": "core.exceptions.drf_exception_handler",
@@ -118,5 +121,8 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
+
+MEDIA_URL = "media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
