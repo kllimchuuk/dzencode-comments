@@ -7,6 +7,11 @@ from tree_queries.query import TreeQuerySet
 from core.models import TimeStampedModel
 
 
+class CommentQuerySet(TreeQuerySet):
+    def roots(self):
+        return self.filter(parent__isnull=True)
+
+
 class Comment(TimeStampedModel):
     parent = TreeNodeForeignKey(
         "self",
@@ -32,7 +37,7 @@ class Comment(TimeStampedModel):
     ip_address = models.GenericIPAddressField(null=True, blank=True)
     user_agent = models.TextField(blank=True)
 
-    objects = TreeQuerySet.as_manager()
+    objects = CommentQuerySet.as_manager()
 
     class Meta:
         indexes = [models.Index(fields=["-created_at"])]
