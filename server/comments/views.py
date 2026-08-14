@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 
 from core.captcha import CaptchaService
 from core.pagination import DefaultPagination
+from core.throttling import WriteScopedRateThrottle
 
 from .queries import get_comment_forest, get_root_comments
 from .serializers import (
@@ -15,11 +16,15 @@ from .services import CommentService
 
 
 class CaptchaView(APIView):
+    throttle_scope = "captcha"
+
     def get(self, request):
         return Response(CaptchaService().generate())
 
 
 class CommentPreviewView(APIView):
+    throttle_scope = "preview"
+
     def post(self, request):
         serializer = CommentPreviewSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -28,6 +33,9 @@ class CommentPreviewView(APIView):
 
 
 class CommentListCreateView(APIView):
+    throttle_classes = [WriteScopedRateThrottle]
+    throttle_scope = "comment_create"
+
     def get(self, request):
         roots = get_root_comments(ordering=request.query_params.get("ordering"))
         paginator = DefaultPagination()

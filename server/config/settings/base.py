@@ -85,6 +85,14 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
+    "DEFAULT_THROTTLE_CLASSES": [
+        "rest_framework.throttling.ScopedRateThrottle",
+    ],
+    "DEFAULT_THROTTLE_RATES": {
+        "comment_create": "20/min",
+        "captcha": "30/min",
+        "preview": "30/min",
+    },
 }
 
 SIMPLE_JWT = {
