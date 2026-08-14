@@ -53,5 +53,4 @@ class CommentListCreateView(APIView):
             ip_address=request.META.get("REMOTE_ADDR"),
             user_agent=request.META.get("HTTP_USER_AGENT", ""),
         )
-        comment._children = []
         return Response(CommentSerializer(comment).data, status=status.HTTP_201_CREATED)
