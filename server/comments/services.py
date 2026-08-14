@@ -1,7 +1,13 @@
 import nh3
 from lxml import etree
 
-from .exceptions import InvalidHTMLException, ParentNotFoundException
+from core.captcha import CaptchaService
+
+from .exceptions import (
+    InvalidCaptchaException,
+    InvalidHTMLException,
+    ParentNotFoundException,
+)
 from .models import Comment
 
 ALLOWED_TAGS = {"a", "code", "i", "strong"}
@@ -10,6 +16,7 @@ ALLOWED_ATTRIBUTES = {"a": {"href", "title"}}
 
 class CommentService:
     def create(self, *, data: dict, user, ip_address, user_agent: str) -> Comment:
+        self._validate_captcha(data["captcha_token"], data["captcha_answer"])
         self._validate_xhtml(data["text"])
         parent = self._resolve_parent(data.get("parent"))
         return Comment.objects.create(
@@ -22,6 +29,10 @@ class CommentService:
             ip_address=ip_address,
             user_agent=user_agent,
         )
+
+    def _validate_captcha(self, token: str, answer: str) -> None:
+        if not CaptchaService().validate(token, answer):
+            raise InvalidCaptchaException()
 
     def _validate_xhtml(self, text: str) -> None:
         try:

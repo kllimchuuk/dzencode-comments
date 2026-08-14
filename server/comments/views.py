@@ -2,11 +2,17 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from core.captcha import CaptchaService
 from core.pagination import DefaultPagination
 
 from .queries import get_comment_forest, get_root_comments
 from .serializers import CommentCreateSerializer, CommentSerializer
 from .services import CommentService
+
+
+class CaptchaView(APIView):
+    def get(self, request):
+        return Response(CaptchaService().generate())
 
 
 class CommentListCreateView(APIView):

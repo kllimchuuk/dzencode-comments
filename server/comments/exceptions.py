@@ -15,3 +15,10 @@ class ParentNotFoundException(AppException):
 
     def __init__(self, message="Parent comment not found.", payload=None):
         super().__init__(code="parent_not_found", message=message, payload=payload)
+
+
+class InvalidCaptchaException(AppException):
+    status_code = status.HTTP_400_BAD_REQUEST
+
+    def __init__(self, message="Invalid or expired captcha.", payload=None):
+        super().__init__(code="invalid_captcha", message=message, payload=payload)

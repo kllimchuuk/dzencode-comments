@@ -12,6 +12,8 @@ class CommentCreateSerializer(serializers.Serializer):
     email = serializers.EmailField()
     home_page = serializers.URLField(required=False, allow_blank=True)
     text = serializers.CharField()
+    captcha_token = serializers.CharField()
+    captcha_answer = serializers.CharField()
 
 
 class CommentSerializer(serializers.ModelSerializer):
