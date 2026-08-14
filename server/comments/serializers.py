@@ -14,6 +14,7 @@ class CommentCreateSerializer(serializers.Serializer):
     text = serializers.CharField()
     captcha_token = serializers.CharField()
     captcha_answer = serializers.CharField()
+    file = serializers.FileField(required=False, allow_null=True)
 
 
 class CommentPreviewSerializer(serializers.Serializer):
