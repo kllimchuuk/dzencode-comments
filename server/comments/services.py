@@ -12,6 +12,7 @@ from .exceptions import (
     ParentNotFoundException,
 )
 from .models import Attachment, Comment
+from .tasks import process_image
 
 ALLOWED_TAGS = {"a", "code", "i", "strong"}
 ALLOWED_ATTRIBUTES = {"a": {"href", "title"}}
@@ -39,7 +40,11 @@ class CommentService:
                 user_agent=user_agent,
             )
             if file:
-                Attachment.objects.create(comment=comment, file=file, kind=kind)
+                attachment = Attachment.objects.create(
+                    comment=comment, file=file, kind=kind
+                )
+                if kind == Attachment.Kind.IMAGE:
+                    transaction.on_commit(lambda: process_image.delay(attachment.id))
         return comment
 
     def preview(self, text: str) -> str:
