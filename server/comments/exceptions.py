@@ -1,35 +1,37 @@
-from rest_framework import status
-
-from core.exceptions import AppException
+from core.exceptions import NotFoundException, ValidationException
 
 
-class InvalidHTMLException(AppException):
-    status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
-
-    def __init__(self, message="Comment text is not valid XHTML.", payload=None):
-        super().__init__(code="invalid_html", message=message, payload=payload)
-
-
-class ParentNotFoundException(AppException):
-    status_code = status.HTTP_404_NOT_FOUND
-
-    def __init__(self, message="Parent comment not found.", payload=None):
-        super().__init__(code="parent_not_found", message=message, payload=payload)
-
-
-class InvalidCaptchaException(AppException):
-    status_code = status.HTTP_400_BAD_REQUEST
-
-    def __init__(self, message="Invalid or expired captcha.", payload=None):
-        super().__init__(code="invalid_captcha", message=message, payload=payload)
-
-
-class InvalidAttachmentException(AppException):
-    status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
-
+class InvalidHTMLException(ValidationException):
     def __init__(
         self,
-        message="Attachment must be a JPG/PNG/GIF image (<=5MB) or a .txt file (<=100KB).",
-        payload=None,
-    ):
-        super().__init__(code="invalid_attachment", message=message, payload=payload)
+        message: str = "Comment text is not valid XHTML.",
+        payload: dict | None = None,
+    ) -> None:
+        super().__init__(message=message, payload=payload, code="invalid_html")
+
+
+class ParentNotFoundException(NotFoundException):
+    def __init__(
+        self,
+        message: str = "Parent comment not found.",
+        payload: dict | None = None,
+    ) -> None:
+        super().__init__(message=message, payload=payload, code="parent_not_found")
+
+
+class InvalidCaptchaException(ValidationException):
+    def __init__(
+        self,
+        message: str = "Invalid or expired captcha.",
+        payload: dict | None = None,
+    ) -> None:
+        super().__init__(message=message, payload=payload, code="invalid_captcha")
+
+
+class InvalidAttachmentException(ValidationException):
+    def __init__(
+        self,
+        message: str = "Attachment must be a JPG/PNG/GIF image (<=5MB) or a .txt file (<=100KB).",
+        payload: dict | None = None,
+    ) -> None:
+        super().__init__(message=message, payload=payload, code="invalid_attachment")

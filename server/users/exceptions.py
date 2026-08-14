@@ -1,10 +1,10 @@
-from rest_framework import status
-
-from core.exceptions import AppException
+from core.exceptions import ValidationException
 
 
-class InvalidTokenException(AppException):
-    status_code = status.HTTP_400_BAD_REQUEST
-
-    def __init__(self, message="Invalid or missing refresh token.", payload=None):
-        super().__init__(code="invalid_token", message=message, payload=payload)
+class InvalidTokenException(ValidationException):
+    def __init__(
+        self,
+        message: str = "Invalid or missing refresh token.",
+        payload: dict | None = None,
+    ) -> None:
+        super().__init__(message=message, payload=payload, code="invalid_token")
