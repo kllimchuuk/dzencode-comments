@@ -31,7 +31,7 @@ class InvalidCaptchaException(ValidationException):
 class InvalidAttachmentException(ValidationException):
     def __init__(
         self,
-        message: str = "Attachment must be a JPG/PNG/GIF image (<=5MB) or a .txt file (<=100KB).",
+        message: str = "Attachment must be a JPG/PNG/GIF image or a .txt file (<=100KB).",
         payload: dict | None = None,
     ) -> None:
         super().__init__(message=message, payload=payload, code="invalid_attachment")

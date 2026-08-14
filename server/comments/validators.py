@@ -4,7 +4,6 @@ from .exceptions import InvalidAttachmentException
 from .models import Attachment
 
 ALLOWED_IMAGE_FORMATS = {"JPEG", "PNG", "GIF"}
-MAX_IMAGE_SIZE = 5 * 1024 * 1024
 MAX_TEXT_SIZE = 100 * 1024
 
 
@@ -19,20 +18,18 @@ class ImageFile(FileTypeStrategy):
     kind = Attachment.Kind.IMAGE
 
     def matches(self, file) -> bool:
-        return (
-            self._within_limit(file)
-            and self._is_intact(file)
-            and self._format(file) in ALLOWED_IMAGE_FORMATS
-        )
-
-    def _within_limit(self, file) -> bool:
-        return file.size <= MAX_IMAGE_SIZE
+        return self._is_intact(file) and self._format(file) in ALLOWED_IMAGE_FORMATS
 
     def _is_intact(self, file) -> bool:
         file.seek(0)
         try:
             Image.open(file).verify()
-        except (UnidentifiedImageError, OSError, SyntaxError):
+        except (
+            Image.DecompressionBombError,
+            UnidentifiedImageError,
+            OSError,
+            SyntaxError,
+        ):
             return False
         finally:
             file.seek(0)
@@ -42,7 +39,7 @@ class ImageFile(FileTypeStrategy):
         file.seek(0)
         try:
             image = Image.open(file)
-        except (UnidentifiedImageError, OSError):
+        except (Image.DecompressionBombError, UnidentifiedImageError, OSError):
             return None
         finally:
             file.seek(0)
