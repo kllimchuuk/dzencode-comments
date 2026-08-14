@@ -16,6 +16,10 @@ class CommentCreateSerializer(serializers.Serializer):
     captcha_answer = serializers.CharField()
 
 
+class CommentPreviewSerializer(serializers.Serializer):
+    text = serializers.CharField()
+
+
 class CommentSerializer(serializers.ModelSerializer):
     replies = serializers.SerializerMethodField()
 

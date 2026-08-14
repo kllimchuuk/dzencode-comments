@@ -30,6 +30,10 @@ class CommentService:
             user_agent=user_agent,
         )
 
+    def preview(self, text: str) -> str:
+        self._validate_xhtml(text)
+        return self._sanitize(text)
+
     def _validate_captcha(self, token: str, answer: str) -> None:
         if not CaptchaService().validate(token, answer):
             raise InvalidCaptchaException()

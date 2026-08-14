@@ -6,13 +6,25 @@ from core.captcha import CaptchaService
 from core.pagination import DefaultPagination
 
 from .queries import get_comment_forest, get_root_comments
-from .serializers import CommentCreateSerializer, CommentSerializer
+from .serializers import (
+    CommentCreateSerializer,
+    CommentPreviewSerializer,
+    CommentSerializer,
+)
 from .services import CommentService
 
 
 class CaptchaView(APIView):
     def get(self, request):
         return Response(CaptchaService().generate())
+
+
+class CommentPreviewView(APIView):
+    def post(self, request):
+        serializer = CommentPreviewSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        html = CommentService().preview(serializer.validated_data["text"])
+        return Response({"text": html})
 
 
 class CommentListCreateView(APIView):
