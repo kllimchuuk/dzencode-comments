@@ -1,24 +1,20 @@
 import nh3
 from django.db import transaction
 from lxml import etree
-from PIL import Image, UnidentifiedImageError
 
 from core.captcha import CaptchaService
 
 from .exceptions import (
-    InvalidAttachmentException,
     InvalidCaptchaException,
     InvalidHTMLException,
     ParentNotFoundException,
 )
 from .models import Attachment, Comment
 from .tasks import process_image
+from .validators import AttachmentValidator
 
 ALLOWED_TAGS = {"a", "code", "i", "strong"}
 ALLOWED_ATTRIBUTES = {"a": {"href", "title"}}
-ALLOWED_IMAGE_FORMATS = {"JPEG", "PNG", "GIF"}
-MAX_IMAGE_SIZE = 5 * 1024 * 1024
-MAX_TEXT_SIZE = 100 * 1024
 
 
 class CommentService:
@@ -27,7 +23,7 @@ class CommentService:
         self._validate_xhtml(data["text"])
         parent = self._resolve_parent(data.get("parent"))
         file = data.get("file")
-        kind = self._validate_file(file) if file else None
+        kind = AttachmentValidator().validate(file) if file else None
         with transaction.atomic():
             comment = Comment.objects.create(
                 parent=parent,
@@ -71,63 +67,3 @@ class CommentService:
             return Comment.objects.get(pk=parent_id)
         except Comment.DoesNotExist:
             raise ParentNotFoundException()
-
-    def _validate_file(self, file) -> str:
-        checks = (
-            (Attachment.Kind.IMAGE, self._is_image),
-            (Attachment.Kind.TEXT, self._is_text),
-        )
-        for kind, is_valid in checks:
-            if is_valid(file):
-                return kind
-        raise InvalidAttachmentException()
-
-    def _is_image(self, file) -> bool:
-        return (
-            self._within_limit(file, MAX_IMAGE_SIZE)
-            and self._image_is_intact(file)
-            and self._image_format(file) in ALLOWED_IMAGE_FORMATS
-        )
-
-    def _is_text(self, file) -> bool:
-        return (
-            self._has_txt_extension(file)
-            and self._within_limit(file, MAX_TEXT_SIZE)
-            and self._is_utf8(file)
-        )
-
-    def _within_limit(self, file, limit: int) -> bool:
-        return file.size <= limit
-
-    def _has_txt_extension(self, file) -> bool:
-        return file.name.lower().endswith(".txt")
-
-    def _image_is_intact(self, file) -> bool:
-        file.seek(0)
-        try:
-            Image.open(file).verify()
-        except (UnidentifiedImageError, OSError, SyntaxError):
-            return False
-        finally:
-            file.seek(0)
-        return True
-
-    def _image_format(self, file) -> str | None:
-        file.seek(0)
-        try:
-            image = Image.open(file)
-        except (UnidentifiedImageError, OSError):
-            return None
-        finally:
-            file.seek(0)
-        return image.format
-
-    def _is_utf8(self, file) -> bool:
-        file.seek(0)
-        try:
-            file.read().decode("utf-8")
-        except UnicodeDecodeError:
-            return False
-        finally:
-            file.seek(0)
-        return True
