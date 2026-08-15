@@ -1,5 +1,6 @@
 <script setup>
 import { reactive, ref, nextTick } from "vue";
+import { previewComment } from "../api/comments";
 import CaptchaField from "./CaptchaField.vue";
 
 const USER_NAME_RE = /^[A-Za-z0-9]+$/;
@@ -16,6 +17,8 @@ const form = reactive({
 
 const errors = ref({});
 const textarea = ref(null);
+const previewHtml = ref(null);
+const previewError = ref("");
 
 function isValidUrl(value) {
   try {
@@ -68,6 +71,16 @@ function wrap(tag) {
   });
 }
 
+async function preview() {
+  previewError.value = "";
+  try {
+    previewHtml.value = await previewComment(form.text);
+  } catch {
+    previewHtml.value = null;
+    previewError.value = "Cannot preview — check that your HTML is valid.";
+  }
+}
+
 function handleSubmit() {
   errors.value = validate();
 }
@@ -117,7 +130,18 @@ function handleSubmit() {
       {{ errors.captchaAnswer }}
     </small>
 
-    <button type="submit" class="submit-btn">Add comment</button>
+    <div class="form-actions">
+      <button type="button" class="preview-btn" @click="preview">
+        Preview
+      </button>
+      <button type="submit" class="submit-btn">Add comment</button>
+    </div>
+
+    <div v-if="previewHtml" class="preview">
+      <div class="preview-label">Preview</div>
+      <div class="preview-body" v-html="previewHtml"></div>
+    </div>
+    <small v-if="previewError" class="error">{{ previewError }}</small>
   </form>
 </template>
 
@@ -166,8 +190,21 @@ function handleSubmit() {
   color: #dc2626;
 }
 
+.form-actions {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.preview-btn {
+  padding: 0.45rem 1.1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  background: #fff;
+  font: inherit;
+  cursor: pointer;
+}
+
 .submit-btn {
-  align-self: flex-start;
   padding: 0.45rem 1.1rem;
   border: none;
   border-radius: 4px;
@@ -175,5 +212,23 @@ function handleSubmit() {
   color: #fff;
   font: inherit;
   cursor: pointer;
+}
+
+.preview {
+  padding: 0.75rem;
+  background: #f9fafb;
+  border: 1px dashed #d1d5db;
+  border-radius: 6px;
+}
+
+.preview-label {
+  margin-bottom: 0.4rem;
+  color: #6b7280;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+}
+
+.preview-body {
+  line-height: 1.5;
 }
 </style>
