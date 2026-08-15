@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted } from "vue";
 import { useCommentsStore } from "../stores/comments";
+import CommentForm from "../components/CommentForm.vue";
 import SortHeader from "../components/SortHeader.vue";
 import CommentNode from "../components/CommentNode.vue";
 import Pagination from "../components/Pagination.vue";
@@ -12,6 +13,7 @@ onMounted(() => store.load());
 
 <template>
   <section>
+    <CommentForm />
     <SortHeader :ordering="store.ordering" @change="store.setOrdering" />
     <p v-if="store.loading">Loading…</p>
     <p v-else-if="!store.roots.length">No comments yet.</p>
