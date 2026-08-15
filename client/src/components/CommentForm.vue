@@ -5,6 +5,8 @@ import CaptchaField from "./CaptchaField.vue";
 
 const USER_NAME_RE = /^[A-Za-z0-9]+$/;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const IMAGE_TYPES = ["image/jpeg", "image/png", "image/gif"];
+const MAX_TEXT_SIZE = 100 * 1024;
 
 const form = reactive({
   user_name: "",
@@ -19,6 +21,8 @@ const errors = ref({});
 const textarea = ref(null);
 const previewHtml = ref(null);
 const previewError = ref("");
+const file = ref(null);
+const fileError = ref("");
 
 function isValidUrl(value) {
   try {
@@ -71,6 +75,28 @@ function wrap(tag) {
   });
 }
 
+function isAllowedFile(selected) {
+  if (IMAGE_TYPES.includes(selected.type)) return true;
+  return (
+    selected.name.toLowerCase().endsWith(".txt") &&
+    selected.size <= MAX_TEXT_SIZE
+  );
+}
+
+function onFile(event) {
+  fileError.value = "";
+  const selected = event.target.files[0];
+  if (!selected) {
+    file.value = null;
+    return;
+  }
+  if (isAllowedFile(selected)) file.value = selected;
+  else {
+    file.value = null;
+    fileError.value = "Only JPG/PNG/GIF images or a .txt file (<=100KB).";
+  }
+}
+
 async function preview() {
   previewError.value = "";
   try {
@@ -121,6 +147,16 @@ function handleSubmit() {
       <textarea ref="textarea" v-model="form.text" rows="4"></textarea>
       <small v-if="errors.text" class="error">{{ errors.text }}</small>
     </div>
+
+    <label class="field">
+      <span>Attachment (image or .txt)</span>
+      <input
+        type="file"
+        accept="image/jpeg,image/png,image/gif,.txt"
+        @change="onFile"
+      />
+      <small v-if="fileError" class="error">{{ fileError }}</small>
+    </label>
 
     <CaptchaField
       v-model:token="form.captchaToken"
