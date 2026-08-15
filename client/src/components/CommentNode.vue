@@ -1,10 +1,12 @@
 <script setup>
 import { ref } from "vue";
 import Lightbox from "./Lightbox.vue";
+import CommentForm from "./CommentForm.vue";
 
 defineProps({ comment: { type: Object, required: true } });
 
 const showLightbox = ref(false);
+const showReply = ref(false);
 
 function formatDate(iso) {
   return new Intl.DateTimeFormat("en-GB", {
@@ -44,6 +46,16 @@ function formatDate(iso) {
         @close="showLightbox = false"
       />
     </div>
+    <div class="comment-actions">
+      <button type="button" class="reply-btn" @click="showReply = !showReply">
+        {{ showReply ? "Cancel" : "Reply" }}
+      </button>
+    </div>
+    <CommentForm
+      v-if="showReply"
+      :parent="comment.id"
+      @created="showReply = false"
+    />
     <div v-if="comment.replies?.length" class="comment-replies">
       <CommentNode
         v-for="reply in comment.replies"
@@ -106,6 +118,20 @@ function formatDate(iso) {
   background: none;
   color: #2563eb;
   font: inherit;
+  cursor: pointer;
+}
+
+.comment-actions {
+  margin-top: 0.5rem;
+}
+
+.reply-btn {
+  padding: 0;
+  border: none;
+  background: none;
+  color: #2563eb;
+  font: inherit;
+  font-size: 0.85rem;
   cursor: pointer;
 }
 

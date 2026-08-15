@@ -1,7 +1,13 @@
 <script setup>
 import { reactive, ref, nextTick } from "vue";
-import { previewComment } from "../api/comments";
+import { createComment, previewComment } from "../api/comments";
+import { useCommentsStore } from "../stores/comments";
 import CaptchaField from "./CaptchaField.vue";
+
+const props = defineProps({ parent: { type: Number, default: null } });
+const emit = defineEmits(["created"]);
+
+const store = useCommentsStore();
 
 const USER_NAME_RE = /^[A-Za-z0-9]+$/;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -23,6 +29,9 @@ const previewHtml = ref(null);
 const previewError = ref("");
 const file = ref(null);
 const fileError = ref("");
+const submitError = ref("");
+const captcha = ref(null);
+const fileInput = ref(null);
 
 function isValidUrl(value) {
   try {
@@ -107,8 +116,42 @@ async function preview() {
   }
 }
 
-function handleSubmit() {
+function resetForm() {
+  form.user_name = "";
+  form.email = "";
+  form.home_page = "";
+  form.text = "";
+  form.captchaAnswer = "";
+  file.value = null;
+  fileError.value = "";
+  previewHtml.value = null;
+  errors.value = {};
+  if (fileInput.value) fileInput.value.value = "";
+  captcha.value?.refresh();
+}
+
+async function handleSubmit() {
   errors.value = validate();
+  if (Object.keys(errors.value).length) return;
+  submitError.value = "";
+  try {
+    await createComment({
+      user_name: form.user_name,
+      email: form.email,
+      home_page: form.home_page,
+      text: form.text,
+      captcha_token: form.captchaToken,
+      captcha_answer: form.captchaAnswer,
+      parent: props.parent,
+      file: file.value,
+    });
+    resetForm();
+    await store.load();
+    emit("created");
+  } catch (error) {
+    submitError.value = error.response?.data?.message ?? "Failed to submit.";
+    captcha.value?.refresh();
+  }
 }
 </script>
 
@@ -151,6 +194,7 @@ function handleSubmit() {
     <label class="field">
       <span>Attachment (image or .txt)</span>
       <input
+        ref="fileInput"
         type="file"
         accept="image/jpeg,image/png,image/gif,.txt"
         @change="onFile"
@@ -159,6 +203,7 @@ function handleSubmit() {
     </label>
 
     <CaptchaField
+      ref="captcha"
       v-model:token="form.captchaToken"
       v-model:answer="form.captchaAnswer"
     />
@@ -178,6 +223,7 @@ function handleSubmit() {
       <div class="preview-body" v-html="previewHtml"></div>
     </div>
     <small v-if="previewError" class="error">{{ previewError }}</small>
+    <small v-if="submitError" class="error">{{ submitError }}</small>
   </form>
 </template>
 

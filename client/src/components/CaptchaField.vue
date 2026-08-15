@@ -13,6 +13,8 @@ async function refresh() {
   answer.value = "";
 }
 
+defineExpose({ refresh });
+
 onMounted(refresh);
 </script>
 
