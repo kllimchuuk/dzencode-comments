@@ -17,6 +17,13 @@ function formatDate(iso) {
       <time class="comment-date">{{ formatDate(comment.created_at) }}</time>
     </header>
     <div class="comment-text" v-html="comment.text"></div>
+    <div v-if="comment.replies?.length" class="comment-replies">
+      <CommentNode
+        v-for="reply in comment.replies"
+        :key="reply.id"
+        :comment="reply"
+      />
+    </div>
   </article>
 </template>
 
@@ -52,5 +59,16 @@ function formatDate(iso) {
 
 .comment-text {
   line-height: 1.5;
+}
+
+.comment-replies {
+  margin-top: 0.75rem;
+  margin-left: 1.25rem;
+  padding-left: 0.75rem;
+  border-left: 2px solid #e2e4e8;
+}
+
+.comment-replies .comment:last-child {
+  margin-bottom: 0;
 }
 </style>
