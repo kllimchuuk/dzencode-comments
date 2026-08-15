@@ -26,6 +26,14 @@ function isValidUrl(value) {
   }
 }
 
+function isValidXhtml(text) {
+  const doc = new DOMParser().parseFromString(
+    `<div>${text}</div>`,
+    "application/xml",
+  );
+  return !doc.querySelector("parsererror");
+}
+
 function validate() {
   const found = {};
   if (!form.user_name) found.user_name = "User name is required.";
@@ -36,6 +44,8 @@ function validate() {
   if (form.home_page && !isValidUrl(form.home_page))
     found.home_page = "Enter a valid URL.";
   if (!form.text.trim()) found.text = "Text is required.";
+  else if (!isValidXhtml(form.text))
+    found.text = "Invalid HTML: check that all tags are closed.";
   if (!form.captchaAnswer) found.captchaAnswer = "Captcha answer is required.";
   return found;
 }
