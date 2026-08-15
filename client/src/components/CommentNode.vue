@@ -1,5 +1,10 @@
 <script setup>
+import { ref } from "vue";
+import Lightbox from "./Lightbox.vue";
+
 defineProps({ comment: { type: Object, required: true } });
+
+const showLightbox = ref(false);
 
 function formatDate(iso) {
   return new Intl.DateTimeFormat("en-GB", {
@@ -17,6 +22,28 @@ function formatDate(iso) {
       <time class="comment-date">{{ formatDate(comment.created_at) }}</time>
     </header>
     <div class="comment-text" v-html="comment.text"></div>
+    <div v-if="comment.attachment" class="comment-attachment">
+      <img
+        v-if="comment.attachment.kind === 'image'"
+        :src="comment.attachment.url"
+        alt=""
+        class="attachment-thumb"
+        @click="showLightbox = true"
+      />
+      <button
+        v-else
+        type="button"
+        class="attachment-file"
+        @click="showLightbox = true"
+      >
+        📎 View text file
+      </button>
+      <Lightbox
+        :attachment="comment.attachment"
+        :open="showLightbox"
+        @close="showLightbox = false"
+      />
+    </div>
     <div v-if="comment.replies?.length" class="comment-replies">
       <CommentNode
         v-for="reply in comment.replies"
@@ -59,6 +86,27 @@ function formatDate(iso) {
 
 .comment-text {
   line-height: 1.5;
+}
+
+.comment-attachment {
+  margin-top: 0.5rem;
+}
+
+.attachment-thumb {
+  max-width: 240px;
+  max-height: 180px;
+  border: 1px solid #e2e4e8;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.attachment-file {
+  padding: 0;
+  border: none;
+  background: none;
+  color: #2563eb;
+  font: inherit;
+  cursor: pointer;
 }
 
 .comment-replies {
