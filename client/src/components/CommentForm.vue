@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, ref } from "vue";
+import { reactive, ref, nextTick } from "vue";
 import CaptchaField from "./CaptchaField.vue";
 
 const USER_NAME_RE = /^[A-Za-z0-9]+$/;
@@ -15,6 +15,7 @@ const form = reactive({
 });
 
 const errors = ref({});
+const textarea = ref(null);
 
 function isValidUrl(value) {
   try {
@@ -37,6 +38,24 @@ function validate() {
   if (!form.text.trim()) found.text = "Text is required.";
   if (!form.captchaAnswer) found.captchaAnswer = "Captcha answer is required.";
   return found;
+}
+
+function wrap(tag) {
+  const el = textarea.value;
+  const start = el.selectionStart;
+  const end = el.selectionEnd;
+  const selected = form.text.slice(start, end);
+  const open = tag === "a" ? '<a href="" title="">' : `<${tag}>`;
+  const close = `</${tag}>`;
+  form.text =
+    form.text.slice(0, start) + open + selected + close + form.text.slice(end);
+  nextTick(() => {
+    el.focus();
+    el.setSelectionRange(
+      start + open.length,
+      start + open.length + selected.length,
+    );
+  });
 }
 
 function handleSubmit() {
@@ -68,11 +87,17 @@ function handleSubmit() {
       }}</small>
     </label>
 
-    <label class="field">
+    <div class="field">
       <span>Text</span>
-      <textarea v-model="form.text" rows="4"></textarea>
+      <div class="toolbar">
+        <button type="button" @click="wrap('i')">[i]</button>
+        <button type="button" @click="wrap('strong')">[strong]</button>
+        <button type="button" @click="wrap('code')">[code]</button>
+        <button type="button" @click="wrap('a')">[a]</button>
+      </div>
+      <textarea ref="textarea" v-model="form.text" rows="4"></textarea>
       <small v-if="errors.text" class="error">{{ errors.text }}</small>
-    </label>
+    </div>
 
     <CaptchaField
       v-model:token="form.captchaToken"
@@ -111,6 +136,20 @@ function handleSubmit() {
   border: 1px solid #d1d5db;
   border-radius: 4px;
   font: inherit;
+}
+
+.toolbar {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.toolbar button {
+  padding: 0.15rem 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  background: #f9fafb;
+  font: inherit;
+  cursor: pointer;
 }
 
 .error {
