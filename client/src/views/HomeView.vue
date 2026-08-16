@@ -15,13 +15,25 @@ useCommentSocket();
 
 <template>
   <section>
+    <h2 class="section-title">Add a comment</h2>
     <CommentForm />
+
+    <div class="list-head">
+      <h2 class="section-title">Comments</h2>
+      <span class="count">{{ store.total }}</span>
+    </div>
     <SortHeader :ordering="store.ordering" @change="store.setOrdering" />
-    <p v-if="store.loading">Loading…</p>
-    <p v-else-if="!store.roots.length">No comments yet.</p>
+
+    <p v-if="store.loading" class="state">Loading…</p>
+    <p v-else-if="store.error" class="state state-error">
+      {{ store.error }}
+      <button type="button" class="retry" @click="store.load">Retry</button>
+    </p>
+    <p v-else-if="!store.roots.length" class="state">No comments yet.</p>
     <div v-else class="comment-list">
       <CommentNode v-for="root in store.roots" :key="root.id" :comment="root" />
     </div>
+
     <Pagination
       :page="store.page"
       :total-pages="store.totalPages"
@@ -29,3 +41,47 @@ useCommentSocket();
     />
   </section>
 </template>
+
+<style scoped>
+.section-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.list-head {
+  display: flex;
+  gap: var(--space-2);
+  align-items: baseline;
+  margin-top: var(--space-6);
+}
+
+.count {
+  padding: 0.05rem 0.5rem;
+  background: var(--border);
+  border-radius: 999px;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.state {
+  padding: var(--space-4) 0;
+  color: var(--muted);
+}
+
+.state-error {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  color: var(--danger);
+}
+
+.retry {
+  padding: 0.3rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  font: inherit;
+  color: var(--text);
+  cursor: pointer;
+}
+</style>

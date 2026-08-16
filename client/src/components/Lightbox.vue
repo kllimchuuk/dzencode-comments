@@ -43,21 +43,23 @@ watch(
 .lightbox-overlay {
   position: fixed;
   inset: 0;
-  z-index: 50;
+  z-index: 100;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.7);
+  padding: var(--space-4);
+  background: rgba(17, 24, 39, 0.75);
 }
 
 .lightbox-content {
   position: relative;
   max-width: 90vw;
   max-height: 90vh;
-  padding: 1.25rem;
+  padding: var(--space-6);
   overflow: auto;
-  background: #fff;
-  border-radius: 6px;
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
   transition: transform 0.2s ease;
 }
 
@@ -65,24 +67,32 @@ watch(
   display: block;
   max-width: 100%;
   max-height: 85vh;
+  border-radius: 4px;
 }
 
 .lightbox-text {
   max-width: 80vw;
   margin: 0;
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  font-size: 0.85rem;
   white-space: pre-wrap;
   word-break: break-word;
 }
 
 .lightbox-close {
   position: absolute;
-  top: 0.25rem;
-  right: 0.5rem;
+  top: var(--space-1);
+  right: var(--space-2);
   border: none;
   background: none;
   font-size: 1.5rem;
   line-height: 1;
+  color: var(--muted);
   cursor: pointer;
+}
+
+.lightbox-close:hover {
+  color: var(--text);
 }
 
 .lightbox-enter-active,
@@ -97,6 +107,6 @@ watch(
 
 .lightbox-enter-from .lightbox-content,
 .lightbox-leave-to .lightbox-content {
-  transform: scale(0.9);
+  transform: scale(0.92);
 }
 </style>

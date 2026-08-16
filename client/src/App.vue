@@ -10,7 +10,9 @@ const auth = useAuthStore();
     <nav class="auth-nav">
       <template v-if="auth.isAuthenticated">
         <span class="auth-user">{{ auth.username }}</span>
-        <button type="button" @click="auth.logout">Logout</button>
+        <button type="button" class="btn-ghost" @click="auth.logout">
+          Logout
+        </button>
       </template>
       <template v-else>
         <RouterLink to="/login">Login</RouterLink>
@@ -25,24 +27,33 @@ const auth = useAuthStore();
 
 <style scoped>
 .app-header {
+  position: sticky;
+  top: var(--space-2);
+  z-index: 10;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 1rem;
-  padding-bottom: 0.75rem;
-  border-bottom: 1px solid #e2e4e8;
+  margin-bottom: var(--space-6);
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
 }
 
 .brand {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #1a1a1a;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.brand:hover {
   text-decoration: none;
 }
 
 .auth-nav {
   display: flex;
-  gap: 0.75rem;
+  gap: var(--space-3);
   align-items: center;
   font-size: 0.9rem;
 }
@@ -51,12 +62,18 @@ const auth = useAuthStore();
   font-weight: 600;
 }
 
-.auth-nav button {
-  padding: 0.3rem 0.7rem;
-  border: 1px solid #d1d5db;
-  border-radius: 4px;
-  background: #fff;
+.btn-ghost {
+  padding: 0.35rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
   font: inherit;
+  color: var(--text);
   cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn-ghost:hover {
+  background: var(--bg);
 }
 </style>

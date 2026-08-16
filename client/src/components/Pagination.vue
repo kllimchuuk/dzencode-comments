@@ -25,27 +25,35 @@ function go(target) {
 <style scoped>
 .pagination {
   display: flex;
-  gap: 1rem;
+  gap: var(--space-3);
   align-items: center;
   justify-content: center;
-  margin-top: 1rem;
+  margin-top: var(--space-6);
 }
 
 .pagination button {
-  padding: 0.35rem 0.9rem;
-  border: 1px solid #d1d5db;
-  border-radius: 4px;
-  background: #fff;
+  padding: 0.4rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  font: inherit;
+  color: var(--text);
   cursor: pointer;
+  transition: background 0.15s;
+}
+
+.pagination button:hover:not(:disabled) {
+  background: var(--bg);
 }
 
 .pagination button:disabled {
-  color: #9ca3af;
+  color: var(--muted);
   cursor: default;
+  opacity: 0.6;
 }
 
 .pagination-info {
-  color: #6b7280;
+  color: var(--muted);
   font-size: 0.9rem;
 }
 </style>

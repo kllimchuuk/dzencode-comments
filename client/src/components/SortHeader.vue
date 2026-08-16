@@ -13,6 +13,10 @@ function sortBy(field) {
   emit("change", asc ? `-${field}` : field);
 }
 
+function isActive(field) {
+  return props.ordering === field || props.ordering === `-${field}`;
+}
+
 function indicator(field) {
   if (props.ordering === field) return "▲";
   if (props.ordering === `-${field}`) return "▼";
@@ -21,39 +25,64 @@ function indicator(field) {
 </script>
 
 <template>
-  <div class="sort-header">
+  <div class="sort-bar">
+    <span class="sort-label">Sort by</span>
     <button
       v-for="col in columns"
       :key="col.field"
       type="button"
       class="sort-col"
+      :class="{ active: isActive(col.field) }"
       @click="sortBy(col.field)"
     >
-      {{ col.label }} <span class="sort-arrow">{{ indicator(col.field) }}</span>
+      {{ col.label }}<span class="sort-arrow">{{ indicator(col.field) }}</span>
     </button>
   </div>
 </template>
 
 <style scoped>
-.sort-header {
+.sort-bar {
   display: flex;
-  gap: 1.5rem;
-  margin-bottom: 0.75rem;
-  padding: 0.5rem 0.75rem;
-  border-bottom: 1px solid #e2e4e8;
+  gap: var(--space-3);
+  align-items: center;
+  margin-bottom: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.sort-label {
+  margin-right: var(--space-1);
+  color: var(--muted);
+  font-size: 0.8rem;
 }
 
 .sort-col {
-  padding: 0;
+  display: inline-flex;
+  gap: 0.25rem;
+  align-items: center;
+  padding: 0.2rem 0.5rem;
   border: none;
+  border-radius: 6px;
   background: none;
   font: inherit;
+  font-size: 0.85rem;
   font-weight: 600;
-  color: #374151;
+  color: var(--muted);
   cursor: pointer;
+  transition: color 0.15s;
+}
+
+.sort-col:hover {
+  color: var(--text);
+}
+
+.sort-col.active {
+  color: var(--accent);
 }
 
 .sort-arrow {
-  color: #2563eb;
+  font-size: 0.7rem;
 }
 </style>
