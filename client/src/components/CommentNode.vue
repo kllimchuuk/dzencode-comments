@@ -19,7 +19,16 @@ function formatDate(iso) {
 <template>
   <article class="comment">
     <header class="comment-head">
-      <span class="comment-author">{{ comment.user_name }}</span>
+      <a
+        v-if="comment.home_page"
+        :href="comment.home_page"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="comment-author"
+      >
+        {{ comment.user_name }}
+      </a>
+      <span v-else class="comment-author">{{ comment.user_name }}</span>
       <span class="comment-email">{{ comment.email }}</span>
       <time class="comment-date">{{ formatDate(comment.created_at) }}</time>
     </header>
@@ -68,78 +77,96 @@ function formatDate(iso) {
 
 <style scoped>
 .comment {
-  padding: 0.75rem;
-  margin-bottom: 0.75rem;
-  background: #fff;
-  border: 1px solid #e2e4e8;
-  border-radius: 6px;
+  padding: var(--space-4);
+  margin-bottom: var(--space-3);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
 }
 
 .comment-head {
   display: flex;
-  gap: 0.75rem;
+  gap: var(--space-2);
   align-items: baseline;
-  margin-bottom: 0.4rem;
+  margin-bottom: var(--space-2);
   font-size: 0.85rem;
 }
 
 .comment-author {
   font-weight: 600;
+  color: var(--text);
+}
+
+a.comment-author:hover {
+  color: var(--accent);
+  text-decoration: none;
 }
 
 .comment-email {
-  color: #6b7280;
+  color: var(--muted);
 }
 
 .comment-date {
   margin-left: auto;
-  color: #9ca3af;
+  color: var(--muted);
+  font-size: 0.8rem;
 }
 
 .comment-text {
-  line-height: 1.5;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
 }
 
 .comment-attachment {
-  margin-top: 0.5rem;
+  margin-top: var(--space-3);
 }
 
 .attachment-thumb {
-  max-width: 240px;
-  max-height: 180px;
-  border: 1px solid #e2e4e8;
-  border-radius: 4px;
+  max-width: 220px;
+  max-height: 160px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
   cursor: pointer;
+  transition: transform 0.15s;
+}
+
+.attachment-thumb:hover {
+  transform: scale(1.02);
 }
 
 .attachment-file {
   padding: 0;
   border: none;
   background: none;
-  color: #2563eb;
   font: inherit;
+  color: var(--accent);
   cursor: pointer;
 }
 
 .comment-actions {
-  margin-top: 0.5rem;
+  margin-top: var(--space-2);
 }
 
 .reply-btn {
   padding: 0;
   border: none;
   background: none;
-  color: #2563eb;
   font: inherit;
   font-size: 0.85rem;
+  color: var(--accent);
   cursor: pointer;
 }
 
+.reply-btn:hover {
+  text-decoration: underline;
+}
+
 .comment-replies {
-  margin-top: 0.75rem;
-  margin-left: 1.25rem;
-  padding-left: 0.75rem;
-  border-left: 2px solid #e2e4e8;
+  margin-top: var(--space-3);
+  margin-left: var(--space-4);
+  padding-left: var(--space-4);
+  border-left: 2px solid var(--border);
 }
 
 .comment-replies .comment:last-child {
