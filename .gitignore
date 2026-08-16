@@ -15,6 +15,7 @@ dist/
 *.sqlite3
 /server/media/
 /server/staticfiles/
-docs/
+docs/*
+!docs/schema.sql
 CLAUDE.md
 .claude/
