@@ -12,7 +12,9 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
-RUN useradd -m -u 1000 app && chown -R app:app /app
+RUN useradd -m -u 1000 app \
+    && mkdir -p /app/media /app/staticfiles \
+    && chown -R app:app /app
 USER app
 
 ENTRYPOINT ["sh", "/app/entrypoint.sh"]
