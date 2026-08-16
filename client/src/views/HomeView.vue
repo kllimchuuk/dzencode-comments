@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted } from "vue";
 import { useCommentsStore } from "../stores/comments";
+import { useCommentSocket } from "../composables/useCommentSocket";
 import CommentForm from "../components/CommentForm.vue";
 import SortHeader from "../components/SortHeader.vue";
 import CommentNode from "../components/CommentNode.vue";
@@ -9,6 +10,7 @@ import Pagination from "../components/Pagination.vue";
 const store = useCommentsStore();
 
 onMounted(() => store.load());
+useCommentSocket();
 </script>
 
 <template>
