@@ -157,42 +157,52 @@ async function handleSubmit() {
 
 <template>
   <form class="comment-form" novalidate @submit.prevent="handleSubmit">
-    <label class="field">
-      <span>User Name</span>
-      <input v-model.trim="form.user_name" type="text" />
-      <small v-if="errors.user_name" class="error">{{
-        errors.user_name
-      }}</small>
-    </label>
+    <div class="form-grid">
+      <label class="field">
+        <span class="field-label">User Name</span>
+        <input v-model.trim="form.user_name" type="text" class="input" />
+        <small v-if="errors.user_name" class="error">{{
+          errors.user_name
+        }}</small>
+      </label>
+      <label class="field">
+        <span class="field-label">E-mail</span>
+        <input v-model.trim="form.email" type="email" class="input" />
+        <small v-if="errors.email" class="error">{{ errors.email }}</small>
+      </label>
+    </div>
 
     <label class="field">
-      <span>E-mail</span>
-      <input v-model.trim="form.email" type="email" />
-      <small v-if="errors.email" class="error">{{ errors.email }}</small>
-    </label>
-
-    <label class="field">
-      <span>Home page</span>
-      <input v-model.trim="form.home_page" type="url" />
+      <span class="field-label">Home page</span>
+      <input v-model.trim="form.home_page" type="url" class="input" />
       <small v-if="errors.home_page" class="error">{{
         errors.home_page
       }}</small>
     </label>
 
     <div class="field">
-      <span>Text</span>
+      <span class="field-label">Text</span>
       <div class="toolbar">
-        <button type="button" @click="wrap('i')">[i]</button>
-        <button type="button" @click="wrap('strong')">[strong]</button>
-        <button type="button" @click="wrap('code')">[code]</button>
-        <button type="button" @click="wrap('a')">[a]</button>
+        <button type="button" class="tool-btn" @click="wrap('i')">[i]</button>
+        <button type="button" class="tool-btn" @click="wrap('strong')">
+          [strong]
+        </button>
+        <button type="button" class="tool-btn" @click="wrap('code')">
+          [code]
+        </button>
+        <button type="button" class="tool-btn" @click="wrap('a')">[a]</button>
       </div>
-      <textarea ref="textarea" v-model="form.text" rows="4"></textarea>
+      <textarea
+        ref="textarea"
+        v-model="form.text"
+        rows="4"
+        class="input"
+      ></textarea>
       <small v-if="errors.text" class="error">{{ errors.text }}</small>
     </div>
 
     <label class="field">
-      <span>Attachment (image or .txt)</span>
+      <span class="field-label">Attachment (image or .txt)</span>
       <input
         ref="fileInput"
         type="file"
@@ -202,20 +212,23 @@ async function handleSubmit() {
       <small v-if="fileError" class="error">{{ fileError }}</small>
     </label>
 
-    <CaptchaField
-      ref="captcha"
-      v-model:token="form.captchaToken"
-      v-model:answer="form.captchaAnswer"
-    />
-    <small v-if="errors.captchaAnswer" class="error">
-      {{ errors.captchaAnswer }}
-    </small>
+    <div class="field">
+      <span class="field-label">Captcha</span>
+      <CaptchaField
+        ref="captcha"
+        v-model:token="form.captchaToken"
+        v-model:answer="form.captchaAnswer"
+      />
+      <small v-if="errors.captchaAnswer" class="error">
+        {{ errors.captchaAnswer }}
+      </small>
+    </div>
 
     <div class="form-actions">
-      <button type="button" class="preview-btn" @click="preview">
+      <button type="button" class="btn-secondary" @click="preview">
         Preview
       </button>
-      <button type="submit" class="submit-btn">Add comment</button>
+      <button type="submit" class="btn-primary">Add comment</button>
     </div>
 
     <div v-if="previewHtml" class="preview">
@@ -231,86 +244,137 @@ async function handleSubmit() {
 .comment-form {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  padding: 1rem;
-  margin-bottom: 1.25rem;
-  background: #fff;
-  border: 1px solid #e2e4e8;
-  border-radius: 6px;
+  gap: var(--space-4);
+  padding: var(--space-6);
+  margin-bottom: var(--space-6);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
 }
 
 .field {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
-  font-size: 0.85rem;
+  gap: var(--space-1);
 }
 
-.field input,
-.field textarea {
-  padding: 0.4rem 0.5rem;
-  border: 1px solid #d1d5db;
-  border-radius: 4px;
+.field-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.input {
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
   font: inherit;
+  color: var(--text);
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
 }
 
 .toolbar {
   display: flex;
-  gap: 0.35rem;
+  gap: var(--space-1);
+  margin-bottom: var(--space-1);
 }
 
-.toolbar button {
-  padding: 0.15rem 0.5rem;
-  border: 1px solid #d1d5db;
-  border-radius: 4px;
-  background: #f9fafb;
+.tool-btn {
+  padding: 0.2rem 0.55rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
   font: inherit;
+  font-size: 0.85rem;
+  color: var(--text);
   cursor: pointer;
+  transition: background 0.15s;
+}
+
+.tool-btn:hover {
+  background: var(--border);
 }
 
 .error {
-  color: #dc2626;
+  color: var(--danger);
+  font-size: 0.8rem;
 }
 
 .form-actions {
   display: flex;
-  gap: 0.6rem;
+  gap: var(--space-3);
 }
 
-.preview-btn {
-  padding: 0.45rem 1.1rem;
-  border: 1px solid #d1d5db;
-  border-radius: 4px;
-  background: #fff;
-  font: inherit;
-  cursor: pointer;
-}
-
-.submit-btn {
-  padding: 0.45rem 1.1rem;
+.btn-primary {
+  padding: 0.5rem 1.2rem;
   border: none;
-  border-radius: 4px;
-  background: #2563eb;
+  border-radius: var(--radius);
+  background: var(--accent);
   color: #fff;
   font: inherit;
+  font-weight: 500;
   cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn-primary:hover {
+  background: var(--accent-hover);
+}
+
+.btn-secondary {
+  padding: 0.5rem 1.2rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  font: inherit;
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn-secondary:hover {
+  background: var(--bg);
 }
 
 .preview {
-  padding: 0.75rem;
-  background: #f9fafb;
-  border: 1px dashed #d1d5db;
-  border-radius: 6px;
+  padding: var(--space-3);
+  background: var(--bg);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
 }
 
 .preview-label {
-  margin-bottom: 0.4rem;
-  color: #6b7280;
-  font-size: 0.75rem;
+  margin-bottom: var(--space-1);
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
 .preview-body {
   line-height: 1.5;
+}
+
+@media (max-width: 560px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
 }
 </style>
