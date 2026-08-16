@@ -25,6 +25,10 @@ useCommentSocket();
     <SortHeader :ordering="store.ordering" @change="store.setOrdering" />
 
     <p v-if="store.loading" class="state">Loading…</p>
+    <p v-else-if="store.error" class="state state-error">
+      {{ store.error }}
+      <button type="button" class="retry" @click="store.load">Retry</button>
+    </p>
     <p v-else-if="!store.roots.length" class="state">No comments yet.</p>
     <div v-else class="comment-list">
       <CommentNode v-for="root in store.roots" :key="root.id" :comment="root" />
@@ -62,5 +66,22 @@ useCommentSocket();
 .state {
   padding: var(--space-4) 0;
   color: var(--muted);
+}
+
+.state-error {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  color: var(--danger);
+}
+
+.retry {
+  padding: 0.3rem 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  font: inherit;
+  color: var(--text);
+  cursor: pointer;
 }
 </style>

@@ -9,9 +9,11 @@ export const useCommentsStore = defineStore("comments", () => {
   const total = ref(0);
   const ordering = ref("-created_at");
   const loading = ref(false);
+  const error = ref("");
 
   async function load() {
     loading.value = true;
+    error.value = "";
     try {
       const data = await fetchComments({
         ordering: ordering.value,
@@ -21,6 +23,8 @@ export const useCommentsStore = defineStore("comments", () => {
       page.value = data.page;
       totalPages.value = data.total_pages;
       total.value = data.total;
+    } catch {
+      error.value = "Failed to load comments.";
     } finally {
       loading.value = false;
     }
@@ -44,6 +48,7 @@ export const useCommentsStore = defineStore("comments", () => {
     total,
     ordering,
     loading,
+    error,
     load,
     setOrdering,
     setPage,
